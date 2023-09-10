@@ -1,2 +1,2 @@
-# cs338
-Repository for work done in CS 338: Computer Security at Carleton College. Prof Jeff Ondich. 
+# CS 338: Computer Security
+Repository for work done in CS 338 at Carleton College under Prof Jeff Ondich. 
