@@ -1,0 +1,70 @@
+Hannah Scooler 
+
+=================== DAYTIME ====================
+1.
+    1   192.168.64.2    129.6.15.28     TCP     42934 -> 13 [SYN]
+    2   129.6.15.28     192.168.64.2    TCP     13 -> 42934 [SYN, ACK]
+    3   192.168.64.2    129.6.15.28     TCP     42934 -> 13 [ACK]
+
+2. The client is using port number 42934.
+
+3. The client needs a port so that the server knows where to send 
+its packet back to, so that the communication does not get lost.
+
+4. Frame 5 contains the response from the Daytime server, which is the 
+actual date and time.
+    5   129.6.15.28     192.168.64.2    DAYTIME     DAYTIME Response
+
+5. 
+    0a 36 30 32 30 30 20 32 33 2d
+    /n 6  0  2  0  0     2  3  -
+    30 39 2d 31 33 20 31 39 3a 35 
+    0  9  -  1  3     1  9  :  5
+    37 3a 30 37 20 35 30 20 30 20 
+    7  :  0  7     5  0     0   
+    30 20 31 38 36 2e 34 20 55 54 
+    0     1  8  6  .  4     U  T
+    43 28 4e 49 53 54 29 20 2a 20 0a
+    C  (  N  I  S  T  )     *     /n
+23-09-13 - today's date
+19:57:07 - hours, minutes, seconds 
+UTC - time zone
+(NIST) - National Institute of Standards and Technology 
+
+6. [SYN] stands for synchronize, it is a request from one 
+IP address to another to request a connection between them. 
+
+7. [ACK] stands for acknowledge, it tells the destination 
+address that the source addres has received the previous 
+communication from the destination address. 
+
+8. [FIN] requests the termination of the connection between
+two IP addresses. 
+
+9. The daytime server initiated the closing because in Frame 7
+the first FIN comes from port 13, which is the daytime server's 
+port. 
+
+=================== HTTP ====================
+
+1. Two TCP connections were opened, because only 2 frames have 
+[SYN] in their info. These connections were between port 53716
+and port 80, and between port 53722 and port 80. Looking through
+the info for each frame, these are the only connections that 
+ever appear, which confirms this answer. 
+
+2. The homepage was requested in frame 7. I know this because I 
+can see an HTTP request for index.html. 
+    7   192.168.64.2    45.79.89.123    HTTP    GET /index.html HTTP/1.1
+
+3. The photograph was reqeusted in frame 11, where I can see an HTTP
+request for jeff_square_head.jpg. 
+    11  192.168.64.2    45.79.89.123    HTTP    GET /jeff_square_head.jpg HTTP/1.1
+
+=================== QUESTIONS ====================
+
+It's not totally relevant, but I'm still not entirely sure what 
+the 60200 and 50 0 0 186.4 parts of the daytime server 
+response mean. 
+
+Why are two TCP connections opened in the web page section? 
