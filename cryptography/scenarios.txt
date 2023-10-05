@@ -1,0 +1,60 @@
+Hannah Scooler
+
+1. Alice and Bob should use Diffie-Hellman to agree on a shared secret key. Once they have this key 
+K, Alice should encrypt the message M using AES, and send Bob the ciphertext C = AES(K,M). Bob can 
+then decrypt the message using the same secret key, and get the message doing M = AES_D(K,C). Eve 
+will not be able to read the message, because she will not have the key.
+
+2. Alice should use SHA-256 to hash the message M, and then send M concatenated with the encrypted
+hash of the message using her secret key. This would mean Alice would send M || C to Bob, where
+C = E(H(M), S_A). Essentially, Alice would be sending the message plus her digital signature. Bob 
+would be able to confirm that the message hadn't been changed because he could use SHA-256 as well
+to get H(M), and then do D(C,P_A) to get H(M) and make sure the same digest was produced by both.
+If they are not the same, then Bob knows that the message was corrupted. Mal would not be able to 
+modify the message to a corrupted message X without Bob knowing, because she would not have Alice's
+secret key. Thus, she would not be able to encrypt C_X = E(H(X), S_A) to send X || C_X, and Bob 
+would know that without Alice's digital signature, he shouldn't trust the message. 
+
+3. Alice and Bob should use Diffie-Hellman to get their shared secret key. Then, Alice could use 
+AES to encrypt the message M, and send that with a digital signature. Thus, Alice would have C = 
+AES(K,M) and Sig = E(H(M), S_A), and would send Bob C || Sig. Bob would be able to decrypt C to get
+M = AES_D(K,C) and decrypt Sig to get H(M) = D(Sig, P_A). By using SHA-256 to get H(M), Bob could 
+check to make sure that both H(M) were the same, and know that the message had not been changed. 
+Again, Bob would have confidence that only Alice could have sent this message, because no one else 
+would have had access to her secret key to encrypt Sig. Eve will not be able to read M, because she
+does not have the key to get M from C. 
+
+4. Alice could claim that an attacker had been able to get access to her secret key and to encrypt
+a false contract using this. I would find this pretty plausible, although it might damage Alice's
+reputation to show that her security had been so easily breached. It might draw into question how 
+carefully she was protecting her key. Another claim she could make might be that P_A isn't her 
+public key. Perhaps someone impersonated her and fed Bob the wrong public key. Then Bob would have 
+believed that Alice was the one who digitally signed the contract, when it was someone else. This
+is less plausible than the first option since it would have required more work to create a false 
+website/image of Alice to give Bob a false public key that he believed was real. However, it is 
+still a legitimate concern, especially if the contract was something that attackers might really be
+interested in, like weapon production. Finally, Alice could claim that Bob had used the wrong 
+decryption algorithm, rather than the symmetrical opposite to the encryption algorithm she had 
+used. As the judge, I would find this incredibly improbable, as the chances that an entirely 
+unrelated algorithm could have produced plaintext that would have made sense as a contract to Bob
+seem very slim. 
+
+5. Sig_CA would consist of E(S_CA, H(TBS)), where TBS would be the part of the certificate with
+"bob.com" and P_B. Everyone would have P_CA, TBS, and H, and so would be able to calculate 
+D(P_CA,Sig_CA). Then they could check H(P_B) to make sure it equaled that formula to validate 
+the certificate.
+
+6. This is not enough, because everyone has access to Cert_B. In order to show Alice that Bob is 
+actually the OWNER of the certificate, he would need to encrypt a message with the secret key that
+goes with the public key in the certificate. Therefore, Bob and Alice could do Diffie-Hellman to
+get a shared secret key K, and then Bob could send Alice C = E(K, S_B). If Alice can decrypt the 
+message to get K = D(C, P_B) and that K is the same value as their shared key, then Alice will know
+that Bob has the secret key going with the certificate. 
+
+7. First, if Mal were able to convince the Certificate Authority that she were the owner of bob.com, 
+then they would sign the certificate for her saying that she was Bob. Then she really would have
+the secret key going with bob.com and would be able to convince Alice that this means that she is
+Bob. Second, Bob could establish with Alice that he was who he said he was and had the secret key,
+and once Alice was convinced, Mal could start redirecting the messages so that she were the one
+actually talking to Alice, rather than Bob. This is especially true if after the initial 
+confirmation, Alice doesn't require Bob to keep encrypting his messages with his secret key. 
