@@ -1,0 +1,51 @@
+Hannah Scooler
+
+For dataflow diagram, see dataflow.pdf in this same misc folder. 
+
+Spoofing: 
+- I can create a website with a similar URL to the Tapirs Unlimited URL, so that if there is a 
+common typo, people will mistakenly go to my site instead of the actual website. Then, when they 
+try to log in to Tapirs Unlimited, I get access to their login credentials. Now I can log into 
+their account on the actual Tapirs Unlimited, and boom. Spoofed. To prevent this, Tapirs Unlimited
+can require two factor authentication so that even if I have their credentials, I still won't be 
+able to access anyone's account without their personal phone that has the two factor authentication
+app on it. 
+- Since the IP address is static, I can figure out what exactly that IP address is. Then, I am able
+to spoof the IP address, which will make other people think that I am Tapirs Unlimited. This is 
+another way I will be able to get their credentials. Again, requiring two factor authentication 
+would also prevent this. 
+
+Tampering with data:
+- Using the above methods to gain access to someone's account, I can then delete all of their 
+pictures of tapirs or change the descriptions of the tapirs or change their address to something
+random. This would mostly just be annoying, and again could be prevented by requiring two factor
+authentication to prevent me from getting into someone else's account. 
+
+Repudiation:
+- I can do any of the above on a public library computer that doesn't require me to log in, so it 
+would be practically impossible to trace any of my actions back to me. To prevent this repudation, 
+Tapirs Unlimited could require users to verify an email address with their account. This could 
+still be skirted if I just made a fake email account on the public library computer, and then I 
+could still talk in the chats or upload things that couldn't be traced to me, but as long as there
+is two factor authentication, then I probably couldn't do anything too harmful. 
+
+Information disclosure:
+- Using my patented spoofing technique, I can now see the credit card information and address and
+other information on whomever's account I logged into. To prevent this, Tapirs Unlimited can show 
+only part of the credit card and address, or require two factor authentication. 
+
+Denial of service:
+- By posing as an electrician or by breaking into Jeff's house, I can gain access to his home
+computer. Since the database server is on this computer, if I proceed to just absolutely 
+destroy Jeff's computer, this might break the database or prevent people from using the site. To
+prevent this, Jeff could install some security measures to stop me from breaking into his house. 
+Also, he could make me present proof that I actually work with the electricity company. 
+- To deny service to a specific user, I could ruin their phone or whatever they keep their 2 factor
+authentication on. It would be really hard to prevent this but it also would only prevent one 
+person from using Tapirs Unlimited. 
+
+Elevation of authorization:
+- If I break into Jeff's house, I can use his desktop computer (or if break into his office I might
+be able to steal his laptop). Then, he will hopefully have his password saved in the keychain and I
+can gain access to his account. To prevent this, Jeff can just up his security measures, as listed
+above. 
