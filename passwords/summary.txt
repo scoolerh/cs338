@@ -1,0 +1,44 @@
+Part 1: 
+    Total Time: 13.25 seconds
+    Hashes Computed: 267,516 hashes
+    Passwords Cracked: 2,734 passwords
+    Time per Hash: 0.00004953 seconds per hash
+    Time per Password: 0.004846 seconds per password
+    Passwords per Hash: 0.1021 passwords per hash
+
+Part 2: 
+    Total Time: 3,051.19 seconds (slightly under an hour)
+    Hashes Computed: 1,584,444,740 hashes
+    Passwords Cracked: 60 passwords
+    Time per Hash: 0.000001926 seconds per hash
+    Time per Password: 50.8532 seconds per password
+    Passwords per Hash: 0.000000037868 passwords per hash
+
+Part 3:
+    Total time: 1,401.99 seconds (about 23 minutes)
+    Hashes Computed: 731,388,744 hashes
+    Passwords Cracked: 2,734 passwords
+    Time per Hash: 0.000001917 seconds per hash 
+    Time per Password: 0.5128 seconds per password
+    Passwords per Hash: 0.000003738 passwords per hash
+
+Part 4
+    Which software did you use?
+    What commands did you issue to do your password-cracking?
+    How many passwords did you crack?
+    How long did it take?
+
+Analysis:
+- Did your time per hash computed change between phases? By what factor? Why?
+- Did your time per password crack change between phases? By what factor? Why?
+- Suppose you wanted to precompute all the hashes for each possible password
+so you could just look up the password in a table indexed by the hash. How much
+memory would be required for each phase?
+- How well did hashcat or john do compared to your python program? Give details.
+- Give 3-4 reasons we should store password hashes and not the passwords themselves.
+Think in terms of threats, who the attackers might be, etc.
+
+For the memory question in summary.txt, as a rough estimate you may assume:
+    Each hash string is 32 bytes long.
+    Each password is 16 bytes long.
+    Each mapping of a hash to a password takes up an additional 32 bytes of overhead beyond the space required to store the hash and the password.
