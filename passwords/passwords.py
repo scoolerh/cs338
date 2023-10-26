@@ -5,7 +5,7 @@ import binascii
 words = [line.strip().lower() for line in open('words.txt')]
              
 #Part 1
-
+"""
 digests = []
 hashCount = 0 
 cracked1 = open("cracked1.txt", "w")
@@ -35,7 +35,7 @@ for user in users1:
 print("Hashes Computed: " + str(hashCount))
 print("Passwords Cracked: " + str(passwordsCracked))
 cracked1.close() 
-
+"""
 
 #Part 2
 """ 
