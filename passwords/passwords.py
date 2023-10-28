@@ -3,10 +3,11 @@ import hashlib
 import binascii
 
 words = [line.strip().lower() for line in open('words.txt')]
-             
+ 
+            
 #Part 1
-"""
-digests = []
+'''
+digests = {}
 hashCount = 0 
 cracked1 = open("cracked1.txt", "w")
 
@@ -17,7 +18,7 @@ for word in words:
     hexDigest = binascii.hexlify(digest)
     stringDigest = hexDigest.decode('utf-8')
     hashCount += 1
-    digests.append(stringDigest)
+    digests[stringDigest] = word
 
 users1 = [line.strip().lower() for line in open('pwfile1.txt')]
 passwordsCracked = 0
@@ -27,15 +28,14 @@ for user in users1:
     encodedPassword = user[1]
     password = ""
     if (encodedPassword in digests): 
-        index = digests.index(encodedPassword)
-        password = words[index]
+        password = digests[encodedPassword]
         passwordsCracked += 1
         cracked1.write(username + ":" + password + "\n")
 
 print("Hashes Computed: " + str(hashCount))
 print("Passwords Cracked: " + str(passwordsCracked))
 cracked1.close() 
-"""
+'''
 
 #Part 2
 """ 
@@ -72,7 +72,7 @@ cracked2.close()
 """
 
 #Part 3
-""" 
+'''
 users3 = [line.strip().lower() for line in open('pwfile3.txt')]
 cracked3 = open("cracked3.txt", "w")
 
@@ -98,6 +98,21 @@ for user in users3:
             solved = username + ":" + password
             cracked3.write(solved + "\n")
             print("Passwords Cracked: " + str(passwordsCracked))
+            break
 print("Hashes Computed: " + str(hashCount))
 cracked3.close() 
-"""
+'''
+
+#Analysis 
+
+'''
+digests = {}
+
+for word in words:
+    encodedPassword = word.encode('utf-8')
+    hasher = hashlib.sha256(encodedPassword)
+    digest = hasher.digest()
+    hexDigest = binascii.hexlify(digest)
+    stringDigest = hexDigest.decode('utf-8')
+    digests[stringDigest] = word 
+'''

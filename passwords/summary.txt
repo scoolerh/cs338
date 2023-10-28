@@ -1,9 +1,11 @@
+Hannah Scooler
+
 Part 1: 
-    Total Time: 13.25 seconds
+    Total Time: 0.54 seconds
     Hashes Computed: 267,516 hashes
     Passwords Cracked: 2,734 passwords
-    Time per Hash: 0.00004953 seconds per hash
-    Time per Password: 0.004846 seconds per password
+    Time per Hash: 0.000002019 seconds per hash
+    Time per Password: 0.0001975 seconds per password
     Passwords per Hash: 0.1021 passwords per hash
 
 Part 2: 
@@ -15,31 +17,93 @@ Part 2:
     Passwords per Hash: 0.000000037868 passwords per hash
 
 Part 3:
-    Total time: 1,401.99 seconds (about 23 minutes)
+    Total time: 736.89s seconds (about 12 minutes)
     Hashes Computed: 731,388,744 hashes
     Passwords Cracked: 2,734 passwords
-    Time per Hash: 0.000001917 seconds per hash 
-    Time per Password: 0.5128 seconds per password
+    Time per Hash: 0.000001008 seconds per hash 
+    Time per Password: 0.2695 seconds per password
     Passwords per Hash: 0.000003738 passwords per hash
 
 Analysis:
 
-- Did your time per hash computed change between phases? 
-By what factor? Why?
+1. Did your time per hash computed change between phases? By what factor? Why?
 
-- Did your time per password crack change between phases? 
-By what factor? Why?
+    The time per hash computed was remarkably similar between all of the parts, being about 
+    0.000002, 0.000002, and 0.000001 seconds per hash respectively. This is likely because the 
+    process to compute a hash was the same code throughout each part, just situated in different 
+    contexts. Unexpectedly, the numbers seem to indicate that the computation of a hash in Part 1 
+    took about double the time of Part 3, though there is no obvious reason for this. However, 
+    since the numbers are very small I think that this is just because Part 1 was much, much faster
+    than Part 3, and needed to compute far fewer hashes. In order to test this theory, I ran the 
+    code of just the precomputation of the hashes in Part 1 and timed this. The time needed to just
+    open the words file and put this into the words list was about 0.10 seconds, and the time 
+    needed to do this and then compute the hashes was about 0.55 seconds (which is interesting, as 
+    the Part 1 code in total took less time and included more steps). This seems to indicate that 
+    just computing the hashes takes about 0.45 seconds for 267,516 hashes, or 0.000001682 seconds 
+    per hash, which is closer to the time per hash computed of Part 3 and indicates that the 
+    discrepancy above is just because of the overall time needed between the different parts. Even 
+    so, there is still an apparent difference between the sig figs of the two ratios, so perhaps
+    the difference is just not significant.
 
-- Suppose you wanted to precompute all the hashes for each 
-possible password so you could just look up the password in 
-a table indexed by the hash. How much memory would be required 
-for each phase?
-    Each hash string is 32 bytes long.
-    Each password is 16 bytes long.
-    Each mapping of a hash to a password takes up an additional 
-    32 bytes of overhead beyond the space required to store the 
-    hash and the password.
+2. Did your time per password crack change between phases? By what factor? Why?
 
-- Give 3-4 reasons we should store password hashes and not the
-passwords themselves. Think in terms of threats, who the 
-attackers might be, etc.
+    In Part 1, the fastest part to execute, it only took about 0.0002 seconds to crack one 
+    password. This is because after the initial hash precomputation, the code to crack a password 
+    just involves a for loop through all of the users and, within this, only a few constant time 
+    operations. This means that Part 1 password cracking just has O(n) time, where n is the number
+    of passwords. In Part 2, the time needed to crack a password increased to about 51 seconds per 
+    password. This is because this part required a for loop through all users for the 
+    precomputation, again O(n) time, and then a nested for loop through the words in the words list
+    with computing the hash of the two words combined and then other constant time operations
+    (assuming that the hashing is constant time). If the number of possible words is w, then this 
+    part has worst case O(n + w^2). In Part 3, the time needed to crack a password decreased again,
+    being about 0.3 seconds per password. In the code for this part, the nested for loop has each 
+    user looping through each possible word, with some constant time operations. Thus, in the worst
+    case, this part has O(nw) time. Given all of these big-O analyses, the differences in time 
+    definitely stands to reason. To compare these times explicitly,  Part 2 was 255,000 times 
+    slower than Part 1 and 170 times slower than Part 3, while Part 3 was 1500 times slower than 
+    Part 1. 
+
+3. Suppose you wanted to precompute all the hashes for each possible password so you could just 
+look up the password in a table indexed by the hash. How much memory would be required for each 
+phase?
+
+    Part 1 has a one-to-one ratio of possible passwords to words in the word list (267,516), since
+    each possible password is just a word in the list. Thus, this dictionary requires 32 * 267,516
+    bytes for each hash string, plus 16 * 267,516 bytes for each password, plus 32 * 267,516 bytes
+    for the additional overhead. This sums to a total of 21,401,280 bytes needed for Part 1.
+
+    Part 2 has w^2 possible passwords, since it is a combination of 2 passwords in the wordlist,
+    where order matters. This means that to precompute all of these possible passwords, the 
+    dictionary would need 16 * (267,516)^2 bytes for each password, 32 * (267,516)^2 bytes for
+    each hash string of these passwords, and 32 * (267,516)^2 bytes for the additional overhead,
+    for a total of 5.7251848e+12 or 5,725,184,800,000 bytes. This is over 5000 gigabytes, where my 
+    MacBook Air has 8 gigabytes. 
+
+    In Part 3, the salt is a random 8-digit hexadecimal number, so there are 16^8 = 4,294,967,296
+    possible salts. Then for each salt, there are 267,516 possible words that that salt could be 
+    concatenated with to produce a possible password. Thus, the number of possible passwords itself
+    is already 1.1489725e+15 = 1,148,972,500,000,000. To get the number of bytes needed for this 
+    dictionary, we multiply it by 80 = 32 + 32 + 16 to get a total of 9.1917798e+16 bytes = 
+    91,917,798,000,000,000 bytes. This would be 91,917,798 gigabytes, or 11,489,724 times my 
+    computer's storage. 
+
+4. Give 3-4 reasons we should store password hashes and not the passwords themselves. Think in 
+terms of threats, who the attackers might be, etc.
+
+    By storing the hashes of the passwords, there is a high level of security due to the preimage 
+    resistance of hash functions. If we just stored passwords themselves, then by gaining access 
+    to a database/file containing passwords, an attacker would be able to instantly have every 
+    username and its corresponding password. This would then enable a wide variety of threats to 
+    a machine or software. For one, they would be able to spoof any user they wanted, and would 
+    have complete access to that user's account. Also, an attacker would be able to gain access to
+    the accounts of users that might have more authorization on the website, such as managers or
+    executives. This would be an example of elevation of privilege that could allow an attacker to 
+    gain access to confidential records, to make changes to the site, or to just be a general 
+    nuisance. A third type of threat would be tampering, since given access to a user's account, 
+    the attacker would be able to change important data in the account. This is also a violation
+    of information disclosure, since the attacker might have access to any confidential records on
+    the user's account. Basically, it is super important to keep passwords safe since this helps to
+    prevent these sorts of attacks, and storing the password hashes is one very easy but effective 
+    way to keep passwords safe. 
+
