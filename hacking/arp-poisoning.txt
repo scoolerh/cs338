@@ -1,0 +1,107 @@
+Hannah Scooler 
+
+========= EXECUTION ==========
+
+1. Kali's main interface's MAC address is c6:b3:d8:15:5e:b9. I ran ifconfig and then grabbed the 12
+digit hex number next to the word "ether" under the eth0 header. 
+
+2. Kali's main interface's IP address is 192.168.64.4. I ran ifconfig and grabbed the IP address
+next to the word "inet" under the eth0 header. 
+
+3. Metasploitable's main interface's MAC address is a2:77:22:6a:09:d4. I ran ifconfig on 
+Metasploitable and grabbed the 12 digit hex number next to "Ethernet HWaddr" under the eth0 header.
+
+4. Metasploitable's main interface's IP address is 192.168.64.5. I ran ifconfig on 
+Metasploitable and grabbed the IP address next to "inet addr" under the eth0 header.
+
+5. Using netstat -r on Kali, I got: 
+
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags       MSS Window      irtt Iface 
+default         192.168.64.1    0.0.0.0         UG          0 0             0 eth0
+192.168.64.0    0.0.0.0         255.255.255.0   U           0 0             0 eth0
+
+6. Using arp on Kali, I got: 
+
+Address         HWtype      HWaddress           Flags Mask      Iface 
+192.168.64.1    ether       3e:22:fb:84:95:64   C               eth0
+
+7. Using netstat -r on Metasploitable, I got: 
+
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags       MSS Window      irtt Iface 
+192.168.64.0    *               255.255.255.0   U           0 0             0 eth0
+default         192.168.64.1    0.0.0.0         UG          0 0             0 eth0
+
+8. Using arp -a on Metasploitable, I got: 
+
+? (192.168.64.1) at 3E:22:FB:84:95:64 [ether] on eth0
+
+9. Using nslookup jeffondich.com, I got that the IP address of the server jeffondich.com is 
+45.79.89.123. From my routing table, it looks like the first hop on my local network should be 
+192.168.64.1, which has default as the destination. In my ARP cache, the MAC address for this IP 
+address is 3E:22:FB:84:95:64, so this is the MAC address to send the TCP SYN to, because we just
+want to pass the TCP SYN packet on to the next hop on the local network.
+
+10. I can see a HTTP reponse on Metasploitable, but I didn't see any captured packets in Wireshark
+after executing this command.
+
+12. Now, when I run arp -a on Metasploitable, I get: 
+
+? (192.168.64.1) at C6:B3:D8:15:5E:B9 [ether] on eth0
+? (192.168.64.4) at C6:B3:D8:15:5E:B9 [ether] on eth0
+
+So the same IP address as before, but with a different MAC address. Also, there is the existence of
+another IP address, with the same MAC address as the first one. 
+
+13. I predict that Metasploitable will try to send the packet to the C6:B3:D8:15:5E:B9 MAC address,
+since that is the MAC address in its ARP cache. 
+
+15. I can still see the HTTP response in Metasploitable, but now I can also see captured packets in
+Wireshark. From these captured packets, I can see in Kali that Metasploitable and the server did 
+the TCP handshake, then Metasploitable sent the server an HTTP GET / request, and the server sent 
+back an HTTP/1.1 200 OK error code, and then they closed their connection.
+
+16. Kali was able to change Metasploitable's ARP cache by flooding its IP address with ARP messages
+claiming that the MAC address of the host machine was actually a different MAC address. This meant
+that when Metasploitable sent a TCP SYN packet to that MAC address when trying to establish a 
+connection with Jeff's server, the packet was lost in the ether and no connection was able to be 
+set up. You can see in Wireshark when Metasploitable requests the MAC address for the host machine
+that the info says "Who has 192.168.64.1? Tell 192.168.64.4", so this is when Metasploitable is 
+trying to establish its ARP cache. However, since Ettercap had been flooding the stream with 
+invalid ARP messages, Metasploitable picked up on the wrong one and tried to send it there. This 
+was enabled by the fact that 192.168.64.1 didn't send out its MAC unless asked, so Ettercap was
+able to fill this void to provide misleading information. 
+
+17. To design an ARP spoofing detector, I would potentially have it monitor the ARP like we had
+Wireshark do. Once we started the ARP attack, at the end of the info section for most of the ARP
+packets was the message "duplicate use of 192.168.64.1...", noting that the IP address was used by
+two different MAC addresses. By having my detector monitor this traffic and look for a note like 
+this in the packets, I would be able to notify the user when ARP attacks were occuring. 
+
+========= SYNTHESIS ==========
+
+1. The goal of ARP cache poisoning is to intercept packets going to the local router and allow an
+adversary to read them. In order to do this, an attacker Mal on Alice's local network could use ARP
+cache poisoning to bombard Alice's machine with ARP packets saying that the local router has an 
+address that actually belongs to Mal's computer. Thus, when Alice tried to send packets to the 
+local router for transmission to other machines, her ARP cache would have the wrong address, and 
+would actually send the packets to Mal. This strategy is similar to if Mal broke into Alice's phone
+and changed Alice's mom or partner's contact information to Mal's number, so that any texts Alice
+tried to send to her trusted family or friends actually went to Mal. 
+
+2. Alice can definitely detect this attack, just by checking her ARP cache. As we saw above, when 
+ARP poisoning occurs, the ARP cache will have two IP addresses with the same MAC address. If Alice
+notices this, then she can see that someone is attacking her ARP cache. Therefore, Alice would just
+need to check her ARP cache for repeated MAC addresses before trying to connect to any servers.
+
+3. Bob would not be able to detect the attack, since the attack would have to be happening on 
+Alice's local network. Since Bob does not necessarily have access to this, he would have no idea
+that Alice was trying to send packets to his machine that were being intercepted by an attacker.
+The attack would take the packets before they even left the local router to go to Bob's machine,
+making it impossible for Bob to know that this was happening. 
+
+4. Alice or Bob would not be able to detect this attack just by switching to HTTPS, since that 
+would just mean that the messages would be encrypted, so any eavesdroppers that poisoned the ARP
+cache would not be able to read the messages after they had intercepted them. However, HTTPS 
+doesn't have any specific mechanisms to prevent ARP attacks in the first place.
