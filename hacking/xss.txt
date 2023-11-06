@@ -18,10 +18,10 @@ Burpsuite as I did in the Inspector in my regular window.
 d. Yes, the red theme is still present! 
 
 e. The current theme is transmitted between the browser and the server through 
-the Cookie, since when the GET request is sent, the server will tell the 
-browser to save the theme as a Cookie, and when a new GET request is sent the
-browser will let the server know what the current theme is by storing it in the
-Cookie key-value pair. 
+Cookies. The browser will have the value of the Cookie stored in text files on
+the hard drive/browser, and so when the browser loads the page, it can let the 
+server know what the current theme is by sending the Cookie header and its 
+value in the HTTP request. 
 
 f. The change is transmitted between the browser and the server by having the
 browser send a new GET request with the ?theme=____ updated, and then the 
@@ -45,36 +45,34 @@ to this, it opened a sqlite file.
 
 PART 2: CROSS-SITE SCRIPTING (XSS)
 
-Steps to take:
-    - Login to the FDF as Alice (alice@example.com, password: alice) or Bob 
-    (bob@example.com, password: bob) or Eve (go ahead, guess her email and 
-    password!).
-    - Make a post and view your post by clicking on its title in the list of 
-    posts at the bottom of the page.
-    - Go back to the FDF home page.
-    - Click on each of Moriarty's posts and pay attention. What happens?
-    - Study the source code of each of Moriarty's posts. It's shown on the post
-    details page itself, but you should also right-click on the background and 
-    select View Page Source to take a look at the raw HTML. Or, alternatively, 
-    you can select the Elements tab in the browser Inspector and take a look at
-    the source. Regardless, your goal is to figure out how Moriarty made the 
-    FDF behave surprisingly.
-    - Experiment making your own posts as Alice, Bob, or Eve. Make the title 
-    descriptive of what you're trying to do, but fool around in the the post 
-    body however you want to. (If you're unfamiliar with HTML, CSS, and 
-    Javascript, you may want to grab a classmate who knows about those things 
-    to help you implement your nefarious plans.)
+a. First, Moriarty writes a post that contains Javascript or HTML/CSS that has
+some effect when run. Then, Moriarty posts this to the FDF. When other users
+log onto the FDF, they will be able to see the title of this post. If they
+click on it, then the browser will route to a page that displays this post. 
+Part of this process includes displaying the HTML of the post's content. Since
+the post's content includes some Javascript, when the browser tries to show the
+HTML it will parse and execute the Javascript in the user's browser. This will 
+enable Moriarty's attack. As long as the post remains on the FDF, any time 
+a user tries to click on the post they will be vulnerable to this attack. This
+means that the attack can target any number of people for any length of time.
 
-a. Provide a diagram and/or a step-by-step description of the nature and timing
-of Moriarty's attack on users of the FDF.
+b. One attack would involve just running a script with an infinite while
+loop. This is not complex code at all, and will still have a pretty malicious
+effect, because it would take a lot of the user's processing power. I wonder
+if there is a way to keep this code running even when the user left the page,
+so that their CPU would continuously need to be used for this script, 
+potentially crashing their computer or just making it really warm and loud. 
 
-b. Describe an XSS attack that is more virulent than Moriarty's "turn something
-red" and "pop up a message" attacks. Think about what kinds of things the 
-Javascript might have access to via Alice's browser when Alice views the 
-attacker's post.
+c. Javascript provides the ability to get a user's IP address, which can then
+be used to approximate the location of the IP address and thus the user. This
+estimate of location tends to be accurate up to the city, which is data that 
+a user certainly wouldn't want a malicious entity to have. 
+https://www.geoapify.com/how-to-get-user-location-with-javascript 
 
-c. Do it again: describe a second attack that is more virulent than Moriarty's,
-but that's substantially different from your first idea.
-
-d. What techniques can the server or the browser use to prevent what Moriarty 
-is doing?
+d. A potential technique to prevent this type of attack is for the browser to 
+disable Javascript, as then the code injections won't run. However, this will
+potentially cause other websites to not run properly and could disable some
+useful or important features. Another technique would be to take the input from
+the user and display it as a string, rather than letting it be HTML in its own
+right. This way the input would not be treated as code, so it would not be
+parsed and executed, preventing this sort of attack. 
